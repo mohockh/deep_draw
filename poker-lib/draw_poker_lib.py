@@ -146,7 +146,7 @@ class TripleDrawDealer():
             if debug:
                 print('processing bet_string for round: |%s|' % bet_string)
             # Parse the string as bet, call, check, or fold
-            bet = re.match('\S[0-9]*', bet_string)
+            bet = re.match(r'\S[0-9]*', bet_string)
             bet_type = bet.group(0)[0]
             bet_amount = bet.group(0)[1:]
             if not bet_amount:
@@ -155,7 +155,7 @@ class TripleDrawDealer():
                 bet_amount = int(bet_amount)
 
             if debug:
-                print('bet of type |%s| and size |%s|' % (bet_type, bet_amount))
+                print('bet of type |{}| and size |{}|'.format(bet_type, bet_amount))
             
             # Chop bet_string remainder
             bet_string_remainder = bet_string[bet.span()[1]:]
@@ -204,7 +204,7 @@ class TripleDrawDealer():
               (stack_limit, allin_bet, facing_bet, min_raise, pot_size))
         
         # Now, based on situation, collect actions are allowed for active play...
-        allowed_actions = set([])
+        allowed_actions = set()
         if bet_on_action > bet_off_action:
             assert bet_on_action <= bet_off_action, ('On action %s, but somehow has bet %d > %d' %
                                                      (self.action_on.name, bet_on_action, bet_off_action))
@@ -233,7 +233,7 @@ class TripleDrawDealer():
             return
         
         # If still here... ther are legal actions that a player may take!
-        print('Allowed big-bet actions for player %s [%s]: %s' % (self.action_on.name, self.action_on.player_tag(), [actionName[action] for action in allowed_actions]))
+        print('Allowed big-bet actions for player {} [{}]: {}'.format(self.action_on.name, self.action_on.player_tag(), [actionName[action] for action in allowed_actions]))
         
         ###########################
         # Ok, now ask an action, from big-bet model. 
@@ -300,7 +300,7 @@ class TripleDrawDealer():
             if not(best_action in ALL_BETS_SET):
                  bet_amount = 0.0
 
-            print('\nBest action for nlh chose ->  %s\nSuggested bet amount -> %s\n' % (actionName[best_action], bet_amount))
+            print('\nBest action for nlh chose ->  {}\nSuggested bet amount -> {}\n'.format(actionName[best_action], bet_amount))
             # Create the action
             # We keep betting after this action... as long last action allows it.
             keep_betting = True
@@ -308,7 +308,7 @@ class TripleDrawDealer():
             # In case we get illegal "bet_amount", just cap it with bounds.
             if best_action in ALL_BETS_SET and (bet_amount <= min_bet_this_street or bet_amount > allin_bet):
                 if bet_amount <= min_bet_this_street:
-                    print('WARNING: resetting illegal bet |%s| to |%s|' % (bet_amount, max(min_raise, min_bet_this_street)))
+                    print('WARNING: resetting illegal bet |{}| to |{}|'.format(bet_amount, max(min_raise, min_bet_this_street)))
                     bet_amount = max(min_raise, min_bet_this_street)
                     
                     if best_action in ALL_RAISES_SET:
@@ -319,7 +319,7 @@ class TripleDrawDealer():
                     #bet_amount *= 3.0 * np.random.random_sample() + 1.0
                     
                 if bet_amount > allin_bet:
-                    print('WARNING: resetting illegal bet |%s| to |%s|' % (bet_amount, allin_bet))
+                    print('WARNING: resetting illegal bet |{}| to |{}|'.format(bet_amount, allin_bet))
                     bet_amount = allin_bet
             bet_amount = math.floor(bet_amount)
 
@@ -425,7 +425,7 @@ class TripleDrawDealer():
         assert bet_on_action <= max_bet and bet_off_action <= max_bet, 'Max_bet = %d, but players have bet %d and %d' % (max_bet, bet_on_action, bet_off_action)
 
         # Now, based on situation, collect actions are allowed for active play...
-        allowed_actions = set([])
+        allowed_actions = set()
         if bet_on_action > bet_off_action:
             assert bet_on_action <= bet_off_action, ('On action %s, but somehow has bet %d > %d' %
                                                      (self.action_on.name, bet_on_action, bet_off_action))
@@ -453,7 +453,7 @@ class TripleDrawDealer():
             return
         
         # If still here... ther are legal actions that a player may take!
-        print('Allowed actions for player %s: %s' % (self.action_on.name, [actionName[action] for action in allowed_actions]))
+        print('Allowed actions for player {}: {}'.format(self.action_on.name, [actionName[action] for action in allowed_actions]))
 
         # Here the agent... would choose a good action.
         # NOTE: Now tuned for NLH. Need to test for non-big bet games (ignore bet amount, etc)
@@ -596,7 +596,7 @@ class TripleDrawDealer():
         self.hand_history_this_round = []
 
         if not(self.player_blind.is_human or self.player_button.is_human):
-            print('starting new hand [format = %s]. Blind %s and button %s' % (self.format, 
+            print('starting new hand [format = {}]. Blind {} and button {}'.format(self.format, 
                                                                                hand_string(self.player_blind.draw_hand.dealt_cards),
                                                                                hand_string(self.player_button.draw_hand.dealt_cards)))
         else:

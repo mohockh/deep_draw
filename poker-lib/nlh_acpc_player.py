@@ -84,7 +84,7 @@ def reformat_bets_string(bets_string):
             previous_round_bet = bet_size_progression[-1]
             bet_progression_this_round = []
 
-        for bet in re.finditer('\S[0-9]*', street_bets):
+        for bet in re.finditer(r'\S[0-9]*', street_bets):
             #print(bet.span(), bet.group(0))
             # Each bet should be encoded, in turn.
             bet_type = bet.group(0)[0]
@@ -201,7 +201,7 @@ sock.send('VERSION:2.0.0\r\n')
 #state_regex = re.compile(r"MATCHSTATE:(\d):(\d+):([^:]*):([^|]*)\|([^|]*)\|(.*)")
 
 # MATCHSTATE:1:0::|9hQd
-matchstate_string = "MATCHSTATE:(\d*):(\d*):([^:]*)"
+matchstate_string = r"MATCHSTATE:(\d*):(\d*):([^:]*)"
 state_regex = re.compile(r"MATCHSTATE:(\d*):(\d*):([^:]*):([^|]*)\|([^|/]*)/?([^|/]*)/?([^|/]*)/?([^|/]*)")
 
 

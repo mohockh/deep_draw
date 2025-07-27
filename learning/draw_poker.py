@@ -26,7 +26,6 @@ best result:
 	[5s,5c]:	1000 sample:	0.76 average	25.00 maximum
 """ 
 
-from __future__ import print_function
 
 import gzip
 import itertools
@@ -137,7 +136,7 @@ BIG_POT_FOR_IMPORTANT_CASE = (2.0 * MAX_STACK_SIZE) / 10 # in raw chips. How big
 # Use this to train only on results of intelligent players, if different versions available
 # Question: Do we include "DNN_2_per" hands? DNN is a good aggro opponent, but we don't necessarily want to learn its actions. 
 # It provides a challenge, since DNN pats a lot, and over-bets weak hands. We need to learn how to call down with mediocre hands in response.
-PLAYERS_INCLUDE_DEUCE_EVENTS = set(['CNN_3', 'CNN_4', 'CNN_5', 'CNN_6', 'CNN_45', 'CNN_7', 'CNN_76', 'CNN_7_per', 'CNN_76_per', 'man']) # learn only from better models, or man's actions
+PLAYERS_INCLUDE_DEUCE_EVENTS = {'CNN_3', 'CNN_4', 'CNN_5', 'CNN_6', 'CNN_45', 'CNN_7', 'CNN_76', 'CNN_7_per', 'CNN_76_per', 'man'} # learn only from better models, or man's actions
 PLAYERS_INCLUDE_DEUCE_EVENTS.add('DNN_2_per') # experimentally, try to train also will aggro DNN player. Why? to see what betting strong, especially on river, feels like. Also, what are the results of aggro draws & pats?
 # set(['CNN', 'CNN_2', 'CNN_3', 'man', 'sim']) # Incude 'sim' and ''?
 PLAYERS_INCLUDE_DEUCE_EVENTS.add('nlh_sim') # If we want to train on simulation (heuristic) data?
@@ -304,7 +303,7 @@ def big_bets_string_to_array(bets_string, pad_to_fit = PAD_INPUT):
     output_matrix = []
     bet_sequence = []
     # Iterate over the string, and break into bets (with possible values attached)
-    for bet in re.finditer('\S[0-9]*', bets_string):
+    for bet in re.finditer(r'\S[0-9]*', bets_string):
         #print(bet.span(), bet.group(0))
         # Each bet should be encoded, in turn.
         bet_type = bet.group(0)[0]
@@ -379,7 +378,7 @@ def big_bet_get_previous_round_string(all_round_string, current_round_bets_strin
     # print('previous round bets: %s' % bets)
     if bets and current_round_bets_string:
         # first round of betting should be current bets
-        assert bets[0] == current_round_bets_string, 'in bets history, current bets |%s| (%s) not match full history (%s)' % (bets[0], current_round_bets_string, all_round_string)
+        assert bets[0] == current_round_bets_string, 'in bets history, current bets |{}| ({}) not match full history ({})'.format(bets[0], current_round_bets_string, all_round_string)
         bets = bets[1:]
     bets += ['', '', '']
 
@@ -526,7 +525,7 @@ def big_bet_legal_actions_context(num_draws, position, bets_string, reverse = Fa
         #print('adding implied bet for first round action')
         num_bets += 1
 
-    legal_actions = set([])
+    legal_actions = set()
     if num_bets == 0:
         assert(num_draws < 3) # No such thing as zero bets on first round of actions
         #print('--> first or second to act, check or bet')
@@ -571,7 +570,7 @@ def limit_legal_actions_context(num_draws, position, bets_string, reverse = Fals
         #print('adding implied bet for first round action')
         num_bets += 1
 
-    legal_actions = set([])
+    legal_actions = set()
     if num_bets == 0:
         assert(num_draws < 3) # No such thing as zero bets on first round of actions
         #print('--> first or second to act, check or bet')
@@ -635,7 +634,7 @@ def adjust_float_value(hand_val, mode = 'video'):
         return hand_val * BIG_BET_EVENTS_VALUE_SCALE + BIG_BET_EVENTS_VALUE_BASELINE # could possibly return negative, but very unlikely
     else:
         # Unknown mode. 
-        print('Warning! Unknown mode %s for value %s' % (mode, hand_val))
+        print('Warning! Unknown mode {} for value {}'.format(mode, hand_val))
         return hand_val
 
 
@@ -903,7 +902,7 @@ def read_poker_event_line(data_array, csv_key_map, format = 'deuce_events', pad_
 
         # See if hand qualifies for "good hand" boost.
         hand.evaluate()
-        if HOLDEM_TWO_PAIR_ARE_IMPORTANT and hand.category in set([TWO_PAIR, THREE_OF_A_KIND, STRAIGHT, FLUSH, FULL_HOUSE, FOUR_OF_A_KIND, ROYAL_FLUSH]):
+        if HOLDEM_TWO_PAIR_ARE_IMPORTANT and hand.category in {TWO_PAIR, THREE_OF_A_KIND, STRAIGHT, FLUSH, FULL_HOUSE, FOUR_OF_A_KIND, ROYAL_FLUSH}:
             #print('Hand big enough to be important! %s' % hand)
             important_training_case = True
 
@@ -1038,7 +1037,7 @@ def read_poker_event_line(data_array, csv_key_map, format = 'deuce_events', pad_
                        FOLD_PERCENT: 1.0 if action_taken == FOLD_HAND else 0.0, # How often does a player fold, in this situatin?
                        }
     if debug:
-        print('pot: %.0f\tfaced: %.0f\tstax: %.0f\talready: %.0f' % (pot_size, bet_faced, stack_size, bet_this_street_already))
+        print('pot: {:.0f}\tfaced: {:.0f}\tstax: {:.0f}\talready: {:.0f}'.format(pot_size, bet_faced, stack_size, bet_this_street_already))
     for cat in bet_size_values.keys():
         output_array[cat] = bet_size_values[cat]
         if cat == AGGRESSION_PERCENT or cat == FOLD_PERCENT:
@@ -1061,7 +1060,7 @@ def read_poker_event_line(data_array, csv_key_map, format = 'deuce_events', pad_
     # B. Apply min and max cutoffs.
     bet_sizes_vector = np.clip([pot_size * percent for percent in NL_BET_BUCKET_SIZES], min_bet, stack_size)
     if debug:
-        print('bet buckets (pot %.0f)\t%s' % (pot_size, bet_sizes_vector))
+        print('bet buckets (pot {:.0f})\t{}'.format(pot_size, bet_sizes_vector))
     bet_sizes_weights = bet_to_buckets_vector(bet=bet_size, buckets=bet_sizes_vector, debug=debug)
 
     # The weights that we will encode... 
@@ -1104,7 +1103,7 @@ def read_poker_event_line(data_array, csv_key_map, format = 'deuce_events', pad_
     allin_vs_random = float(data_array[csv_key_map['allin_vs_random']])
     stdev_vs_random = float(data_array[csv_key_map['stdev_vs_random']]) # More useful, since allin% is absolute. We are learning hand upside... sort of.
     if debug:
-        print('allin: %.3f (%.3f)\tvs_rando: %.3f (%.3f)' % (allin_vs_oppn, stdev_vs_oppn, allin_vs_random, stdev_vs_random))
+        print('allin: {:.3f} ({:.3f})\tvs_rando: {:.3f} ({:.3f})'.format(allin_vs_oppn, stdev_vs_oppn, allin_vs_random, stdev_vs_random))
     # Array of odds to make hand categories
     value_categories = ast.literal_eval(data_array[csv_key_map['allin_categories_vector']])
     if debug:
@@ -1127,7 +1126,7 @@ def read_poker_event_line(data_array, csv_key_map, format = 'deuce_events', pad_
     allin_vs_oppn_buckets = ALLIN_VS_OPPONENT_BUCKET_SIZES # [0%, ... 50% ... 100%]
     allin_vs_oppn_weights = bet_to_buckets_vector(bet=allin_vs_oppn, buckets=allin_vs_oppn_buckets, debug=debug)
     if debug:
-        print('--> allin value (%.4f) buckets: %s' % (allin_vs_oppn, allin_vs_oppn_weights))
+        print('--> allin value ({:.4f}) buckets: {}'.format(allin_vs_oppn, allin_vs_oppn_weights))
     for index in range(len(allin_vs_oppn_weights)):
         # NOTE: Allin value, and allin value bucket, for every situation.
         weight = allin_vs_oppn_weights[index]
@@ -1199,8 +1198,8 @@ def read_poker_event_line(data_array, csv_key_map, format = 'deuce_events', pad_
         legal_actions = legal_actions_context(num_draws, position, bets_string, reverse = False, format=format)
     else: 
         # Don't fill in bets... if we are encoding a draw move.
-        illegal_actions = set([])
-        legal_actions = set([])
+        illegal_actions = set()
+        legal_actions = set()
     
     if debug:
         print('allowed actions for context: %s' % legal_actions)
@@ -1620,10 +1619,10 @@ def _load_poker_csv(filename=DATA_FILENAME, max_input=MAX_INPUT_SIZE, output_bes
     #print(y_train)
     print('num_examples (train) %s' % X_train.shape[0])
     print('input_dimensions %s' % X_train.shape[1])
-    print('X_train object is type %s of shape %s' % (type(X_train), X_train.shape))
-    print('y_train object is type %s of shape %s' % (type(y_train), y_train.shape))
-    print('z_train object is type %s of shape %s' % (type(z_train), z_train.shape))
-    print('m_train object is type %s of shape %s' % (type(m_train), m_train.shape))
+    print('X_train object is type {} of shape {}'.format(type(X_train), X_train.shape))
+    print('y_train object is type {} of shape {}'.format(type(y_train), y_train.shape))
+    print('z_train object is type {} of shape {}'.format(type(z_train), z_train.shape))
+    print('m_train object is type {} of shape {}'.format(type(m_train), m_train.shape))
 
     return (hands, X_train, y_train, z_train, m_train)
 
@@ -1640,9 +1639,9 @@ def load_data():
     X_test = X_split[1]
     X_train = X_split[2]
 
-    print('X_valid %s %s' % (type(X_valid), X_valid.shape))
-    print('X_test %s %s' % (type(X_test), X_test.shape))
-    print('X_train %s %s' % (type(X_train), X_train.shape))
+    print('X_valid {} {}'.format(type(X_valid), X_valid.shape))
+    print('X_test {} {}'.format(type(X_test), X_test.shape))
+    print('X_train {} {}'.format(type(X_train), X_train.shape))
 
     # And same for Y
     y_split = np.split(y_all, [VALIDATION_SIZE, VALIDATION_SIZE + TEST_SIZE])
@@ -1650,9 +1649,9 @@ def load_data():
     y_test = y_split[1]
     y_train = y_split[2]
 
-    print('y_valid %s %s' % (type(y_valid), y_valid.shape))
-    print('y_test %s %s' % (type(y_test), y_test.shape))
-    print('y_train %s %s' % (type(y_train), y_train.shape))
+    print('y_valid {} {}'.format(type(y_valid), y_valid.shape))
+    print('y_test {} {}'.format(type(y_test), y_test.shape))
+    print('y_train {} {}'.format(type(y_train), y_train.shape))
 
     #sys.exit(0)
 
@@ -1896,7 +1895,7 @@ def get_model_from_pickle(fn):
 
 # Now how do I return theano function to predict, from my given thing? Should be simple.
 def predict_model(output_layer, test_batch):
-    print('Computing predictions on test_batch: %s %s' % (type(test_batch), test_batch.shape))
+    print('Computing predictions on test_batch: {} {}'.format(type(test_batch), test_batch.shape))
     #pred = T.argmax(output_layer.get_output(test_batch, deterministic=True), axis=1)
     pred = output_layer.get_output(lasagne.utils.floatX(test_batch), deterministic=True)
     print('Prediciton: %s' % pred)

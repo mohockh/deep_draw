@@ -26,7 +26,7 @@ csv_key_map = CreateMapFromCSVKey(TRIPLE_DRAW_EVENT_HEADER)
 if __name__ == '__main__':
     filename = sys.argv[1]	
 
-    players = set([])
+    players = set()
     player_results_map = {}
 
     # Read filename
@@ -39,7 +39,7 @@ if __name__ == '__main__':
             action = line[csv_key_map['action']]
             margin_result = float(line[csv_key_map['margin_result']])
 
-            if action in set(['pos_BB', 'pos_SB']):
+            if action in {'pos_BB', 'pos_SB'}:
                 #print('------------')
                 #print([name, action, margin_result])
                 #print('------------')

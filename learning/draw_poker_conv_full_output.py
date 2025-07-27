@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import lasagne
 import theano
 import theano.tensor as T
@@ -52,9 +50,9 @@ def load_data():
     X_test = X_split[1]
     X_train = X_split[2]
 
-    print('X_valid %s %s' % (type(X_valid), X_valid.shape))
-    print('X_test %s %s' % (type(X_test), X_test.shape))
-    print('X_train %s %s' % (type(X_train), X_train.shape))
+    print('X_valid {} {}'.format(type(X_valid), X_valid.shape))
+    print('X_test {} {}'.format(type(X_test), X_test.shape))
+    print('X_train {} {}'.format(type(X_train), X_train.shape))
 
     # And same for Y
     y_split = np.split(y_all, [VALIDATION_SIZE, VALIDATION_SIZE + TEST_SIZE])
@@ -62,9 +60,9 @@ def load_data():
     y_test = y_split[1]
     y_train = y_split[2]
 
-    print('y_valid %s %s' % (type(y_valid), y_valid.shape))
-    print('y_test %s %s' % (type(y_test), y_test.shape))
-    print('y_train %s %s' % (type(y_train), y_train.shape))
+    print('y_valid {} {}'.format(type(y_valid), y_valid.shape))
+    print('y_test {} {}'.format(type(y_test), y_test.shape))
+    print('y_train {} {}'.format(type(y_train), y_train.shape))
 
     # And for Z
     z_split = np.split(z_all, [VALIDATION_SIZE, VALIDATION_SIZE + TEST_SIZE])
@@ -72,9 +70,9 @@ def load_data():
     z_test = z_split[1]
     z_train = z_split[2]
 
-    print('z_valid %s %s' % (type(z_valid), z_valid.shape))
-    print('z_test %s %s' % (type(z_test), z_test.shape))
-    print('z_train %s %s' % (type(z_train), z_train.shape))
+    print('z_valid {} {}'.format(type(z_valid), z_valid.shape))
+    print('z_test {} {}'.format(type(z_test), z_test.shape))
+    print('z_train {} {}'.format(type(z_train), z_train.shape))
 
     #sys.exit(0)
 
@@ -272,7 +270,7 @@ def create_iter_functions_full_output(dataset, output_layer,
 
     all_params = lasagne.layers.get_all_params(output_layer)
     # Default: Nesterov momentum. Try something else?
-    print('Using updates.nesterov_momentum with learning rate %.2f, momentum %.2f' % (learning_rate, momentum))
+    print('Using updates.nesterov_momentum with learning rate {:.2f}, momentum {:.2f}'.format(learning_rate, momentum))
     updates_nesterov = lasagne.updates.nesterov_momentum(loss_train, all_params, learning_rate, momentum)
 
     # "AdaDelta" by Matt Zeiler -- no learning rate or momentum...
@@ -336,7 +334,7 @@ def create_iter_functions_full_output(dataset, output_layer,
 # TODO: output second-best choice
 # TODO: show choices, alongside inputs
 def predict_model(output_layer, test_batch):
-    print('Computing predictions on test_batch: %s %s' % (type(test_batch), test_batch.shape))
+    print('Computing predictions on test_batch: {} {}'.format(type(test_batch), test_batch.shape))
     #pred = T.argmax(output_layer.get_output(test_batch, deterministic=True), axis=1)
     pred = output_layer.get_output(lasagne.utils.floatX(test_batch), deterministic=True)
     print('Prediciton: %s' % pred)

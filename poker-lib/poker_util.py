@@ -82,7 +82,7 @@ def bet_to_buckets_vector(bet, buckets, debug=False):
     # C. Apply closest value to bet size actually made... or whatever algorithm to split/project
     bet_difference_vector = np.abs(bet_sizes_vector - bet_size)
     if debug:
-        print('subtract bet %.0f:\t%s' % (bet_size, bet_difference_vector))
+        print('subtract bet {:.0f}:\t{}'.format(bet_size, bet_difference_vector))
     closest_bet_index = bet_difference_vector.argmin()
     closest_bet = bet_sizes_vector[closest_bet_index]
     if debug:
@@ -140,7 +140,7 @@ def generate_beta(mean, stdev, scale = 1.0):
     var = (stdev / scale) ** 2
     var = min(var, 0.5**2)
     var = max(var, 0.00000001)
-    print('mu %s, var %s' % (mu, var))
+    print('mu {}, var {}'.format(mu, var))
     alpha =  ((1.0 - mu) / var - 1.0 / mu) * (mu**2)
     beta = alpha * (1.0 / mu - 1.0)
     return (alpha, beta, scale, 0.0)
@@ -189,7 +189,7 @@ def best_bet_with_smoothing(bets, values, min_bet = 0.0, pot_size = 0.0, allin_w
         marginal_bet_values = values - allin_value
         marginal_value_at_risk_factor = np.array([(factor if value >= 0 else 1.0/factor) for (factor, value) in zip(value_at_risk_factor, marginal_bet_values)])
         if debug:
-            print('%.2f allin_value. Marginal values:\n%s\n------------' % (allin_value, marginal_bet_values))
+            print('{:.2f} allin_value. Marginal values:\n{}\n------------'.format(allin_value, marginal_bet_values))
             print(marginal_value_at_risk_factor)
         values = np.multiply(marginal_bet_values, marginal_value_at_risk_factor) + allin_value
         y = values

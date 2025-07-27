@@ -1820,7 +1820,7 @@ class TripleDrawHumanPlayer(TripleDrawAIPlayer):
                         allowed_actions = set(list(ALL_CALLS_SET))
                     elif FORMAT == 'nlh':
                         # If NLH, expect to match a number, after the b/r
-                        bet_size_match = re.match('\S*([0-9]*)+', user_move_string[1:])
+                        bet_size_match = re.match(r'\S*([0-9]*)+', user_move_string[1:])
                         try: 
                             if bet_size_match:
                                 bet_size = int(bet_size_match.group(0))

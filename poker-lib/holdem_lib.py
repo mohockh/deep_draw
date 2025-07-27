@@ -43,7 +43,7 @@ FLOP_ROUND = 2 # DRAW_1_BET_ROUND
 TURN_ROUND = 3 # DRAW_2_BET_ROUND
 RIVER_ROUND = 4 # DRAW_3_BET_ROUND
 holdemRoundsLeft = {PREFLOP_ROUND:3, FLOP_ROUND: 2, TURN_ROUND: 1, RIVER_ROUND:0}
-HOLDEM_ROUNDS_SET = set([PREFLOP_ROUND, FLOP_ROUND, TURN_ROUND, RIVER_ROUND])
+HOLDEM_ROUNDS_SET = {PREFLOP_ROUND, FLOP_ROUND, TURN_ROUND, RIVER_ROUND}
 
 # Holdem equivalent for DRAW_VALUE_KEYS. [0.0, 1.0] values trained for simulated holdem hands below.
 # TODO: Make this an easier lookup, etc.
@@ -77,13 +77,13 @@ class HoldemCashier(PayoutTable):
 # NOTE: Can use 0-2 from dealt_cards and the rest from community.
 # TODO: Add game type (or new function) to support Omaha when we get there (needs two cards exclusively)
 # NOTE: Will raise an exception if not enough cards.
-exclude_1_choose_6 = [set([0]), set([1]), set([2]), set([3]), set([4]), set([5])]
-exclude_2_choose_7 = [set([0,1]), set([0,2]), set([0,3]), set([0,4]), set([0,5]), set([0,6]), 
-                      set([1,2]), set([1,3]), set([1,4]), set([1,5]), set([1,6]),
-                      set([2,3]), set([2,4]), set([2,5]), set([2,6]),
-                      set([3,4]), set([3,5]), set([3,6]),
-                      set([4,5]), set([4,6]),
-                      set([5,6])]
+exclude_1_choose_6 = [{0}, {1}, {2}, {3}, {4}, {5}]
+exclude_2_choose_7 = [{0,1}, {0,2}, {0,3}, {0,4}, {0,5}, {0,6}, 
+                      {1,2}, {1,3}, {1,4}, {1,5}, {1,6},
+                      {2,3}, {2,4}, {2,5}, {2,6},
+                      {3,4}, {3,5}, {3,6},
+                      {4,5}, {4,6},
+                      {5,6}]
 def hand_rank_community_cards(dealt_cards, community_cards):
     assert len(dealt_cards) == 2, 'Need holdem hand for eval. Given %s' % dealt_cards
     all_cards = dealt_cards + community_cards
@@ -119,7 +119,7 @@ def hand_rank_community_cards(dealt_cards, community_cards):
     return best_rank
 
 # Move this out of Holdem... if values cache goes outside of Holdem
-class HoldemValuesCache(object):
+class HoldemValuesCache:
     def __init__(self, cache_max = POKER_VALUES_CACHE_MAX):
         self.cache_max = cache_max
         self.values_map = {}
@@ -127,7 +127,7 @@ class HoldemValuesCache(object):
     # Assume that all cards given as [Card] array.
     # NOTE: Assumes that inputs are NOT canonicalized or sorted
     def key(self, our_hand, oppn_hand, flop, turn, river):
-        return '%s/%s:%s/%s/%s' % (hand_string(our_hand), hand_string(oppn_hand), 
+        return '{}/{}:{}/{}/{}'.format(hand_string(our_hand), hand_string(oppn_hand), 
                                    hand_string(flop), hand_string(turn), hand_string(river))
     
     # Standard dictionary insert
@@ -160,7 +160,7 @@ class HoldemValuesCache(object):
 
 # Community cards. Not part of the deck. But also not really a hand. 
 # NOTE: We can hard-wire a hand having flop, turn and river.
-class HoldemCommunityHand(object):
+class HoldemCommunityHand:
     def __init__(self, flop = [], turn = [], river = []):
         self.flop = flop
         self.turn = turn
@@ -237,11 +237,11 @@ class HoldemCommunityHand(object):
             self.undeal(deck)
         
     def __str__(self):
-        return '%s%s%s' % (hand_string(self.flop), hand_string(self.turn), hand_string(self.river))
+        return '{}{}{}'.format(hand_string(self.flop), hand_string(self.turn), hand_string(self.river))
 
 
 # A hand for Hold'em. Replicates some of the DrawHand methods... but not all. And try to keep it simpler.
-class HoldemHand(object):
+class HoldemHand:
     def __init__(self, cards = None, community = None):
         self.dealt_cards = []
         self.rank = -1
