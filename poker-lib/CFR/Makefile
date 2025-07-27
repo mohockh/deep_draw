@@ -1,7 +1,7 @@
 # Note that if any header files are missing when you try to build, things fail
 # in mysterious ways.  You get told there is "No rule to make target obj/foo.o".
-HEADS =	src/constants.h src/cards.h src/canonical.h src/hand_evaluator.h \
-	src/io.h src/hand_tree.h
+HEADS =	constants.h cards.h canonical.h hand_evaluator.h \
+	io.h hand_tree.h
 
 # Can't seem to get things to work without putting library explicitly on
 # link line.
@@ -20,7 +20,7 @@ LIBRARIES = -lpthread # /usr/lib/x86_64-linux-gnu/liblzo2.a -lpthread
 # and ProfilerStop().  (You will need to #include "gperftools/profiler.h".)
 CFLAGS = -std=c++0x -Wall -O2
 
-obj/%.o:	src/%.cpp $(HEADS)
+obj/%.o:	%.cpp $(HEADS)
 		gcc $(CFLAGS) -c -o $@ $<
 
 OBJS =	obj/constants.o obj/cards.o obj/canonical.o obj/hand_evaluator.o \
