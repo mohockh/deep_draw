@@ -26,7 +26,7 @@ For poker hand evaluation, keep simulation simple: deal to the end. For hand eva
 # All the data to store, from a hand simulation
 POKER_FULL_SIM_HEADER = ['game', 'hand', 'flop', 'turn', 'river', 'best_value', 'sample_size']
 POKER_FULL_SIM_HEADER += [categoryName[category] for category in HIGH_HAND_CATEGORIES]
-print POKER_FULL_SIM_HEADER
+print(POKER_FULL_SIM_HEADER)
 
 # Save a fully simulated hand, in the above format!
 def output_full_sim_csv(poker_hand, result, category_values, header_map, sample_size):
@@ -57,10 +57,10 @@ def output_full_sim_csv(poker_hand, result, category_values, header_map, sample_
 # D. Output value of best average.
 def game_full_sim(round, tries_per_draw, dealer_round=random.choice(list(HOLDEM_ROUNDS_SET))): #PREFLOP_ROUND):
 
-    print '\n-- New Round %d --\n' % round
+    print('\n-- New Round %d --\n' % round)
 
     deck = PokerDeck(shuffle=True)
-    #print deck
+    #print(deck)
     community_hand = HoldemCommunityHand()
     holdem_hand = HoldemHand(community = community_hand)
     deal_cards = deck.deal(2)
@@ -69,7 +69,7 @@ def game_full_sim(round, tries_per_draw, dealer_round=random.choice(list(HOLDEM_
     # Deal the hand, then rewind to the correct position.
     community_hand.deal(deck=deck, runway=True)
     community_hand.rewind(deck=deck, round=dealer_round)
-    print holdem_hand
+    print(holdem_hand)
 
     # Our phantom opponent. Don't give him cards yet.
     opponent_hand = HoldemHand(community = community_hand)
@@ -77,7 +77,7 @@ def game_full_sim(round, tries_per_draw, dealer_round=random.choice(list(HOLDEM_
     hand_results = []
     category_results = [0.0 for category in HIGH_HAND_CATEGORIES]
     for i in range(tries_per_draw):
-        #print '\nrewind (%s)...\n' % i
+        #print('\nrewind (%s)...\n' % i)
         community_hand.rewind(deck=deck, round=dealer_round)
         deck.return_cards(opponent_hand.dealt_cards, shuffle=False)
         deck.shuffle()
@@ -92,19 +92,19 @@ def game_full_sim(round, tries_per_draw, dealer_round=random.choice(list(HOLDEM_
 
         # TODO: Count winners & losers...
         if holdem_hand.rank > opponent_hand.rank:
-            #print holdem_hand
+            #print(holdem_hand)
             #print('\tloser')
-            #print opponent_hand
+            #print(opponent_hand)
             result = 0.0
         elif holdem_hand.rank < opponent_hand.rank:
-            #print holdem_hand
+            #print(holdem_hand)
             #print('\twinner')
-            #print opponent_hand
+            #print(opponent_hand)
             result = 1.0
         else:
-            #print holdem_hand
+            #print(holdem_hand)
             #print('\ttie-die')
-            #print opponent_hand
+            #print(opponent_hand)
             result = 0.5
         hand_results.append(result)
         #print('ave result: %.3f' % np.mean(hand_results))
@@ -114,13 +114,13 @@ def game_full_sim(round, tries_per_draw, dealer_round=random.choice(list(HOLDEM_
         category_index = high_hand_categories_index[category]
         category_results[category_index] += 1.0
 
-    print '\nrewind (%s)...\n' % i
+    print('\nrewind (%s)...\n' % i)
     community_hand.rewind(deck=deck, round=dealer_round)
-    print holdem_hand
+    print(holdem_hand)
 
     print('final results vs random hand %.4f' % np.mean(hand_results))
     print[[categoryName[category], category_results[high_hand_categories_index[category]] / tries_per_draw] for category in HIGH_HAND_CATEGORIES] 
-    #print [cat_result / tries_per_draw for cat_result in category_results]
+    #print([cat_result / tries_per_draw for cat_result in category_results])
 
     #sys.exit(-1)
 
@@ -133,7 +133,7 @@ def game_full_sim(round, tries_per_draw, dealer_round=random.choice(list(HOLDEM_
     cashier = JacksOrBetter() # "976-9-6" Jacks or Better -- with 100% long-term payout.
     draw_hand.simulate_all_draws(deck=deck, tries=tries_per_draw, payout_table=cashier, debug=False)
 
-    #print draw_hand
+    #print(draw_hand)
 
     # What's the average payout, for the best move?
     pay_him = draw_hand.best_result.average_value
@@ -150,7 +150,7 @@ def generated_cases(sample_size, tries_per_draw, output_file_name):
     if output_file_name:
         output_file = open(output_file_name, 'w')
         csv_writer = csv.writer(output_file)
-	# Don't print header
+	# Don't print(header)
         csv_writer.writerow(POKER_FULL_SIM_HEADER)
         csv_header_map = CreateMapFromCSVKey(POKER_FULL_SIM_HEADER)
     else:
@@ -167,22 +167,22 @@ def generated_cases(sample_size, tries_per_draw, output_file_name):
             csv_writer.writerow(hand_csv_row)
 
             # Hack, to show matrix for final hand.
-            #print hand_to_matrix(hand.final_hand)
+            #print(hand_to_matrix(hand.final_hand))
             #pretty_print_hand_matrix(hand.final_hand)
 
         round += 1
         end_round_time = time.time()
         #sys.exit(-3)
 
-        print '%d rounds took %.1f seconds' % (round, end_round_time - start_time)
+        print('%d rounds took %.1f seconds' % (round, end_round_time - start_time))
 
     if csv_writer:
-        #print '\nwrote %d rows' % round
+        #print('\nwrote %d rows' % round)
         output_file.close()
 
-    #print short_results
+    #print(short_results)
     result_values = [r[1] for r in short_results]
-    print '\naverage return: %.4f\tmax return: %.4f' % (np.mean(result_values), max(result_values))
+    print('\naverage return: %.4f\tmax return: %.4f' % (np.mean(result_values), max(result_values)))
 
 if __name__ == '__main__':
     # TODO: Set from command line
@@ -198,7 +198,7 @@ if __name__ == '__main__':
         filename = sys.argv[1]
         output_file_name = filename
 
-    print 'will save %d lines to %s' % (samples, output_file_name)
+    print('will save %d lines to %s' % (samples, output_file_name))
 
     # TODO: Take num samples from command line.
     generated_cases(sample_size=samples, tries_per_draw=tries_per_draw, output_file_name=output_file_name)

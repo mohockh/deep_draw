@@ -27,14 +27,14 @@ deuce_values_5_5_maxpool_model = '../learning/deuce_conv_12_filter_fat_x0_5398_5
 fn = video_poker_5_5_maxpool_model # deuce_values_5_5_maxpool_model # holdem_values_5_5_maxpool_model # holdem_values_model # deuce_draws_model # deuce_bets_model
 with open(fn,'rb') as fp:
 	data = pickle.load(fp)
-	print dir(data), type(data)
+	print(dir(data), type(data))
 
 # Show what we got.
 for i, l in enumerate(data):
-	print 'layer ', i, type(l), l.shape
+	print('layer ', i, type(l), l.shape)
 
 a = data[0]
-print a.shape
+print(a.shape)
 
 ncols = 2 # 12 # 24 # 3 # how many filters to show (all random)
 # For Holdem: [0] = 2 private cards, [1] = flop [2] = turn [3] = river, [4] = all public cards [5] = all cards
@@ -42,9 +42,9 @@ ncols = 2 # 12 # 24 # 3 # how many filters to show (all random)
 # Video poker: [0-4] = individual cards
 nrow = 5 # 6 # bit (out of 31 inputs)
 
-print a[np.random.randint(ncols),np.random.randint(nrow),:,:]
-print a[np.random.randint(ncols),np.random.randint(nrow),:,:]
-print a[np.random.randint(ncols),np.random.randint(nrow),:,:]
+print(a[np.random.randint(ncols),np.random.randint(nrow),:,:])
+print(a[np.random.randint(ncols),np.random.randint(nrow),:,:])
+print(a[np.random.randint(ncols),np.random.randint(nrow),:,:])
 
 #n0, n1, d, d = a.shape
 

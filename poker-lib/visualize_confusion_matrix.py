@@ -50,7 +50,7 @@ for i in conf_arr:
     for j in i:
         tmp_arr.append(float(j)/float(a))
     norm_conf.append(tmp_arr)
-#print norm_conf
+#print(norm_conf)
 
 fig = plt.figure()
 plt.clf()

@@ -1924,7 +1924,7 @@ def game_round(round, cashier, player_button=None, player_blind=None,
                board_string = None, bets_string = None,
                csv_writer=None, csv_header_map=None,
                player_button_average=0.0, player_blind_average=0.0):
-    print '\n-- New Round %d --\n' % round
+    print('\n-- New Round %d --\n' % round)
     # Performance suffers... a lot, over time. Can we improve this with garbage collection?
     # NOTE: Not really, but doesn't hurt. If you want to improve performance, need to purge the theano-cache
     # "theano-cache purge" --> on GPU
@@ -1934,7 +1934,7 @@ def game_round(round, cashier, player_button=None, player_blind=None,
         now = time.time()
         print('--> wait for manual garbage collection...')
         gc.collect()
-        print ('--> gc %d took %.1f seconds...\n' % (round, time.time() - now))
+        print(('--> gc %d took %.1f seconds...\n' % (round, time.time() - now)))
 
     # Shuffle deck *before* any hand setup. 
     deck = PokerDeck(shuffle=True)
@@ -2020,7 +2020,7 @@ def game_round(round, cashier, player_button=None, player_blind=None,
             csv_writer.writerow(event_line)
     # TODO: Flush buffer here?
 
-    # How long did it take to calculate & print everything?
+    # How long did it take to calculate & print(everything?)
 
     # Game log, in ACPC format.
     # TODO: If desired bets supplied via "bet_string", did we get the same thing back??
@@ -2498,7 +2498,7 @@ def play(sample_size, output_file_name=None, draw_model_filename=None, holdem_mo
             # If we loaded ACPC line, check for correctness
             if line:
                 print('ACPC line: |%s|' % line)
-            print ('hand %d took %.1f seconds...\n' % (round, time.time() - now))
+            print(('hand %d took %.1f seconds...\n' % (round, time.time() - now)))
 
             print('BB results mean %.2f stdev %.2f: %s (%s)' % (np.mean(bb_results), np.std(bb_results), bb_results[-10:], len(bb_results)))
             print('SB results mean %.2f stdev %.2f: %s (%s)' % (np.mean(sb_results), np.std(sb_results), sb_results[-10:], len(sb_results)))

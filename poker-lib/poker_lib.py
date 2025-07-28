@@ -27,7 +27,7 @@ DIAMOND = 0x4000
 HEART	= 0x2000
 SPADE	= 0x1000
 suitsArray = [CLUB, DIAMOND, HEART, SPADE]
-#print 'suits: %s' % suitsArray
+#print('suits: %s' % suitsArray)
 
 # Sometimes we need [CLUB, DIAMOND, HEART, SPADE] -> [0,1,2,3]
 suits_to_matrix = {CLUB: 0, DIAMOND: 1, HEART: 2, SPADE: 3}
@@ -46,7 +46,7 @@ Queen	= 10
 King	= 11
 Ace     = 12
 ranksArray = [Deuce, Trey, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King, Ace]
-#print 'ranks: %s' % ranksArray
+#print('ranks: %s' % ranksArray)
 royalRanksSet = set([ Ten, Jack, Queen, King, Ace ])
 
 # High card hands
@@ -378,7 +378,7 @@ all_draw_patterns = [ set([]),
                       set([0,1,2,3]), set([0,1,2,4]), set([0,1,3,4]), set([0,2,3,4]), set([1,2,3,4]),
                       set([0,1,2,3,4]) ]
 
-#print all_draw_patterns
+#print(all_draw_patterns)
 
 
 # There are X ways to scramble the suits in a hand. Note that any mapping still results in same output.
@@ -386,7 +386,7 @@ all_draw_patterns = [ set([]),
 all_suit_scrambles_array = itertools.permutations([CLUB, DIAMOND, HEART, SPADE])
 all_suit_scrambles_maps = [{CLUB: permutation[0], DIAMOND: permutation[1], HEART: permutation[2], SPADE: permutation[3]} for permutation in all_suit_scrambles_array]
 
-#print all_suit_scrambles_maps
+#print(all_suit_scrambles_maps)
 
 
 # stuff for simulation, 32 categories of output (above)
@@ -426,10 +426,10 @@ for draw_pattern in all_draw_patterns:
 # self.hashTag = [PokerHashes prime:self.value] | (self.value << 8) | self.suit | (1 << (16+self.value));
 #///////////////////////////////////////////////////////////////////////////////
 def card_hash_tag(suit, value):
-    #print 'Computing hash tag for suit %d, value %d %s-%s' % ( suit, value, valueName[value], suitSymbol[suit])
+    #print('Computing hash tag for suit %d, value %d %s-%s' % ( suit, value, valueName[value], suitSymbol[suit]))
     hash_tag =  (hash_prime(value)) | (value << 8) | suit | (1 << (16+value))
-    #print hash_tag
-    #print format(hash_tag, '#032b')
+    #print(hash_tag)
+    #print(format(hash_tag, '#032b'))
     return hash_tag
 
 # A bit more involved than you think. Encodes the card in C-style, for lib lookup, hand evaluation, etc.
@@ -476,7 +476,7 @@ def holdem_cards_canonical_form(cards_array, flop_array, turn_array, river_array
 
     # C. Run C-library
     all_cards_canonical_string = cards_to_python_ext.canonical_board(all_cards_string, lower_bound, upper_bound)
-    #print all_cards_canonical_string
+    #print(all_cards_canonical_string)
     
     # D. Translate back to card arrays
     all_cards_canonical_array = []
@@ -525,7 +525,7 @@ def card_from_string(card_str):
 
 # card array from long string (no comma or [])
 def card_array_from_string(card_str):
-    #print card_str
+    #print(card_str)
     if not card_str:
         return []
     assert len(card_str) % 2 == 0, 'Invalid card string! |%s|' % card_str
@@ -553,7 +553,7 @@ def hand_suit_scrambles(hand_array):
             unique_strings.add(new_hand_string)
 
     #print('for hand %s, found %d unique hands equivalent by suit permutation' % (hand_string(hand_array), len(uniques)))
-    #print unique_strings
+    #print(unique_strings)
 
     return uniques
 
@@ -621,7 +621,7 @@ def hard_findit(key):
         else:
             return( mid );
 
-    print "ERROR:  no match found; key = %d" % key
+    print("ERROR:  no match found; key = %d" % key)
     return( -1 );
 
 # Takes 5-card hand array as input
@@ -635,26 +635,26 @@ def hand_rank_five_card(hand):
     # Unique hand hash -- flushes excluded.
     q = (c0|c1|c2|c3|c4) >> 16
 
-    #print 'trying easy product q = %d' % q
-    #print format(q, '#032b')
+    #print('trying easy product q = %d' % q)
+    #print(format(q, '#032b'))
 
     # check for Flushes and StraightFlushes
     if ( c0 & c1 & c2 & c3 & c4 & 0xF000 ):
-        #print 'looking in flushes'
+        #print('looking in flushes')
         return flushes[q]
    
     # check for Straights and HighCard hands
     s = unique5[q]
     if s:
-        #print 'found in unique5'
+        #print('found in unique5')
         return s
 
     # let's do it the hard way -- find hand in the sorted array, with binary search.
-    #print 'do it the hard way'
+    #print('do it the hard way')
     q_hard = (c0 & 0xFF) * (c1 & 0xFF) * (c2 & 0xFF) * (c3 & 0xFF) * (c4 & 0xFF);
-    #print 'product: %d' % q_hard
+    #print('product: %d' % q_hard)
     q_findit = hard_findit(q_hard)
-    #print 'found q_findit: %d' % q_findit
+    #print('found q_findit: %d' % q_findit)
     return values[q_findit]
 
 # Using similar lookup methods... get 0-1000 final hand heuristic... for Deuce game. 
@@ -677,12 +677,12 @@ def deuce_rank_five_card(hand):
     # Unique hand hash -- flushes excluded.
     q = (c0|c1|c2|c3|c4) >> 16
 
-    #print 'trying easy product q = %d' % q
-    #print format(q, '#032b')
+    #print('trying easy product q = %d' % q)
+    #print(format(q, '#032b'))
 
     # check for Flushes and StraightFlushes
     if ( c0 & c1 & c2 & c3 & c4 & 0xF000 ):
-        #print 'looking in flushes'
+        #print('looking in flushes')
         return DEUCE_FLUSH_RANK
    
     # check for Straights and HighCard hands
@@ -726,8 +726,8 @@ def hand_to_matrix(poker_hand, pad_to_fit=False, pad_size=HAND_TO_MATRIX_PAD_SIZ
         value_offset = 0
 
     for card in poker_hand:
-        #print card
-        #print ([suits_to_matrix[card.suit]], [card.value])
+        #print(card)
+        #print(([suits_to_matrix[card.suit]], [card.value]))
         matrix[suits_to_matrix[card.suit] + suit_offset][card.value + value_offset] = 1
 
     # If double row, now copy rows
@@ -747,10 +747,10 @@ def pretty_print_hand_matrix(poker_hand):
     matrix = hand_to_matrix(poker_hand)
 
     header = 'x' + ''.join([valueSymbol[v] for v in ranksArray])
-    print header
+    print(header)
     for suit in suitsArray:
         row = suitSymbol[suit] + ''.join([(str(c) if c  else '.') for c in matrix[suits_to_matrix[suit]]])
-        print row
+        print(row)
 
 # Represent bet size (or pot size) as encoding of 1's. Starts top left corner, like 2c.
 # NOTE: Assumes "double size" 8x13 working area (so encoding as cards doesn't work).
@@ -966,7 +966,7 @@ class PokerHand(object):
                 self.final_hand.append(held_card)
 
         for card in cards:
-            #print card
+            #print(card)
             if final_hand:
                 self.final_hand.append(card)
                 self.draw_cards.append(card)
@@ -1003,9 +1003,9 @@ class PokerHand(object):
         # C. evaluate hand, save value
         dummy_rank = hand_rank_five_card(dummy_hand)
 
-        # print it once in a while...
+        # print(it once in a while...)
         if random.random() <= debug_delta or dummy_rank <= 1:
-            print 'dummy_hand [%d] %s' % (dummy_rank, ','.join([str(card) for card in dummy_hand]))
+            print('dummy_hand [%d] %s' % (dummy_rank, ','.join([str(card) for card in dummy_hand])))
 
         # D. return drawn cards to deck & shuffle it
         deck.return_cards(cards_return, shuffle=True)
@@ -1019,14 +1019,14 @@ class PokerHand(object):
     # NOTE: At the end, deck should contain cards it started with. Possibly, re-shuffled.
     def simulate_all_draws(self, deck, tries, payout_table, debug=True):
         if debug:
-            print '\nsimulating all draws for dealt hand [%s]' % (','.join([str(card) for card in self.dealt_cards]))
+            print('\nsimulating all draws for dealt hand [%s]' % (','.join([str(card) for card in self.dealt_cards])))
         self.sim_results = []
         for i in range(len(all_draw_patterns)):
             draw_pattern = all_draw_patterns[i]
             draw_cards = []
             for draw_pos in draw_pattern:
                 draw_cards.append(self.dealt_cards[draw_pos])
-            #print 'attempting draw_pattern [%s], %d times, on hand [%s]' % (','.join([str(card) for card in draw_cards]), tries, ','.join([str(card) for card in self.dealt_cards]))
+            #print('attempting draw_pattern [%s], %d times, on hand [%s]' % (','.join([str(card) for card in draw_cards]), tries, ','.join([str(card) for card in self.dealt_cards])))
 
             # Hack: 10x tries if royal flush possiblity...
             # NOTE: Need that in the trial. And at the same time, don't want to skew results if randomly get there.
@@ -1053,25 +1053,25 @@ class PokerHand(object):
                     hand_rank += 1 # Knock it down to str8 flush from Royal.
 
                 hand_payout = payout_table.payout_rank(hand_rank)
-                #print '\t$%d' % hand_payout
+                #print('\t$%d' % hand_payout)
                 sim_result.add_result(hand_payout)
 
-            #print 'for draw_pattern %s, sim result %s\n' %  (str(draw_pattern), str(sim_result))
+            #print('for draw_pattern %s, sim result %s\n' %  (str(draw_pattern), str(sim_result)))
             
             # Hack, as we just use fixed order of all_draw_patterns to match results
             sim_result.evaluate()
             self.sim_results.append(sim_result)
         
-        # print [draw pattern] : [result]
+        # print([draw pattern] : [result])
         if debug:
-            print 'All %d sim results for hand [%s]:' % (len(self.sim_results), ','.join([str(card) for card in self.dealt_cards]))
+            print('All %d sim results for hand [%s]:' % (len(self.sim_results), ','.join([str(card) for card in self.dealt_cards])))
             for i in range(len(all_draw_patterns)):
                 draw_pattern = all_draw_patterns[i]
                 draw_cards = []
                 for draw_pos in draw_pattern:
                     draw_cards.append(self.dealt_cards[draw_pos])
                 sim_result = self.sim_results[i]
-                print '\t[%s]:\t%s' % (','.join([str(card) for card in draw_cards]), str(sim_result))
+                print('\t[%s]:\t%s' % (','.join([str(card) for card in draw_cards]), str(sim_result)))
 
         # Now, also save the best move.
         # NOTE: Need to have each average evaluated!
@@ -1081,7 +1081,7 @@ class PokerHand(object):
         best_draw_cards = []
         for draw_pos in best_pattern:
             best_draw_cards.append(self.dealt_cards[draw_pos])
-        print '\nbest result:\n\t[%s]:\t%s\n' % (','.join([str(card) for card in best_draw_cards]), str(best_result))
+        print('\nbest result:\n\t[%s]:\t%s\n' % (','.join([str(card) for card in best_draw_cards]), str(best_result)))
 
         self.best_result = best_result
 
@@ -1100,24 +1100,24 @@ class PokerHand(object):
     # example: '340' draws three cards.
     # NOTE: This is ackward, but good for command-line input
     def draw(self, drawstring=''):
-        #print 'processing drawstring |%s|' % drawstring
+        #print('processing drawstring |%s|' % drawstring)
         drawn_cards = []
         positions_set = set([])
         for position in drawstring:
             pos_int = int(position)
             positions_set.add(pos_int)
 
-        #print 'Try drawing from positions %s' % positions_set
+        #print('Try drawing from positions %s' % positions_set)
         
         # Draw cards, starting from the end [so that array number preserved]
         for position in sorted(positions_set, reverse=True):
-            #print 'Removing card from position %d' % position
+            #print('Removing card from position %d' % position)
             card = self.held_cards.pop(position)
-            #print card
+            #print(card)
             drawn_cards.append(card)
             self.discards.append(card)
 
-        #print 'throwing away %d cards' % len(drawn_cards)
+        #print('throwing away %d cards' % len(drawn_cards))
         return drawn_cards
 
     # Look up with hash tables

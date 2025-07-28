@@ -337,7 +337,7 @@ def game_batch(round, cashier, player):
     player.clear_batch()
     for i in range(BATCH_SIZE):
         if i == 0:
-            print '\n-- New Round %d --\n' % round
+            print('\n-- New Round %d --\n' % round)
 
         deck = PokerDeck(shuffle=True)
         draw_hand = PokerHand()
@@ -365,7 +365,7 @@ def game_batch(round, cashier, player):
     for i in range(len(batches)):
         draw_hand = batches[i]
 
-        print draw_hand
+        print(draw_hand)
         print('-------')
 
         # Evaluate the hand. This means returning a number corresponding to hand order, and category.
@@ -386,16 +386,16 @@ def game_batch(round, cashier, player):
 # F. Evaluate final hand
 # G. Return result
 def game(round, cashier, player=None):
-    print '\n-- New Round %d --\n' % round
+    print('\n-- New Round %d --\n' % round)
 
     deck = PokerDeck(shuffle=True)
-    #print deck
+    #print(deck)
     draw_hand = PokerHand()
-    #print draw_hand
+    #print(draw_hand)
     deal_cards = deck.deal(5)
-    #print deal_cards
+    #print(deal_cards)
     draw_hand.deal(deal_cards)
-    #print draw_hand
+    #print(draw_hand)
 
     # Now hand is dealt. Use an agent to choose what do discard.
     #player = DeadPlayer() # asleep at the wheel
@@ -406,14 +406,14 @@ def game(round, cashier, player=None):
     # Optionally, player also returns is expectation of the value...
     expected_payout = player.move(hand=draw_hand, deck=deck)
 
-    print draw_hand
+    print(draw_hand)
 
     # Evaluate the hand. This means returning a number corresponding to hand order, and category.
     draw_hand.evaluate()
     pay_him = cashier.payout(draw_hand)
     draw_hand.reward = pay_him
     
-    print 'pay the man his $%d' % pay_him
+    print('pay the man his $%d' % pay_him)
 
     return (draw_hand, pay_him, expected_payout)
 
@@ -532,7 +532,7 @@ def play(sample_size, output_file_name, model_filename=None):
                         csv_writer.writerow(hand_csv_row)
 
                     # Hack, to show matrix for final hand.
-                    # print hand_to_matrix(hand.final_hand)
+                    # print(hand_to_matrix(hand.final_hand))
                     # print(hand_string(hand.final_hand))
                     # pretty_print_hand_matrix(hand.final_hand)
 
@@ -552,7 +552,7 @@ def play(sample_size, output_file_name, model_filename=None):
                     round += 1
             
             # Print the best 100 results. Why? Shows skew at the top. 
-            print '\npaid %s' % sorted(results, reverse=True)[0:100]
+            print('\npaid %s' % sorted(results, reverse=True)[0:100])
             print('\n%d hands took %.2fs. Running return: %.5f. Expected return: %.5f' % (len(results), 
                                                                                           time.time() - now, 
                                                                                           np.mean(results), 
@@ -563,15 +563,15 @@ def play(sample_size, output_file_name, model_filename=None):
         pass
 
     if csv_writer:
-        print '\nwrote %d rows' % len(results)
+        print('\nwrote %d rows' % len(results))
         output_file.close()
 
-    print '\npaid %s' % sorted(results, reverse=True)[0:100]
-    print '\nexpected %s' % sorted(expected_results, reverse=True)[0:100]
+    print('\npaid %s' % sorted(results, reverse=True)[0:100])
+    print('\nexpected %s' % sorted(expected_results, reverse=True)[0:100])
     
     # What do we expect with these hands? And more importantly, how did we make out?
-    print '\nexpected:\tave: %.5f\tstdev: %.5f\tskew: %.5f' % (np.mean(expected_results), np.std(expected_results), ss.skew(expected_results))
-    print '\nstats(%d):\tave: %.5f\tstdev: %.5f\tskew: %.5f' % (len(results), np.mean(results), np.std(results), ss.skew(results))
+    print('\nexpected:\tave: %.5f\tstdev: %.5f\tskew: %.5f' % (np.mean(expected_results), np.std(expected_results), ss.skew(expected_results)))
+    print('\nstats(%d):\tave: %.5f\tstdev: %.5f\tskew: %.5f' % (len(results), np.mean(results), np.std(results), ss.skew(results)))
 
     sys.stdout.flush()
 

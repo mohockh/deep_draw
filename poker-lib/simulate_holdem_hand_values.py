@@ -23,7 +23,7 @@ Example: 44 preflop: how many rivers are we 90%? 20%? 40% against random hand.
 # All the data to store, from a hand simulation
 POKER_FULL_SIM_HEADER = ['game', 'hand', 'flop', 'turn', 'river', 'best_value', 'sample_size']
 POKER_FULL_SIM_HEADER += [categoryName[category] for category in HIGH_HAND_CATEGORIES]
-print POKER_FULL_SIM_HEADER
+print(POKER_FULL_SIM_HEADER)
 
 # Save a fully simulated hand, in the above format!
 def output_full_sim_csv(poker_hand, result, category_values, header_map, sample_size):
@@ -60,7 +60,7 @@ def collect_river_values(sample_size=1000, tries_per_draw=1000, csv_writer=None)
     c1 = deck.remove_card(Card(suit=SPADE, value=Jack))
     c2 = deck.remove_card(Card(suit=SPADE, value=Ten))
     dealer_round = RIVER_ROUND # Always deal to the river before evaluation
-    #print deck
+    #print(deck)
     community_hand = HoldemCommunityHand()
     holdem_hand = HoldemHand(community = community_hand)
     #deal_cards = deck.deal(2)
@@ -82,12 +82,12 @@ def collect_river_values(sample_size=1000, tries_per_draw=1000, csv_writer=None)
         community_hand.deal(deck=deck, runway=True)
         community_hand.rewind(deck=deck, round=dealer_round)
         holdem_hand.evaluate()
-        print holdem_hand
+        print(holdem_hand)
 
         hand_results = []
         category_results = [0.0 for category in HIGH_HAND_CATEGORIES]
         for i in range(tries_per_draw):
-            #print '\nrewind (%s)...\n' % i
+            #print('\nrewind (%s)...\n' % i)
 
             # Return opponent cards, and river/turn cards if needed (default is full boards)
             community_hand.rewind(deck=deck, round=dealer_round)
@@ -102,9 +102,9 @@ def collect_river_values(sample_size=1000, tries_per_draw=1000, csv_writer=None)
             opponent_hand = HoldemHand(cards = deck.deal(2), community = community_hand)
             opponent_hand.evaluate()
         
-            #print holdem_hand
+            #print(holdem_hand)
             #print('\tvs')
-            #print opponent_hand
+            #print(opponent_hand)
 
             if holdem_hand.rank > opponent_hand.rank:
                 result = 0.0
@@ -122,7 +122,7 @@ def collect_river_values(sample_size=1000, tries_per_draw=1000, csv_writer=None)
         # We finished given flop. Display, save.
         print('--> Average values: %.4f %s' % (np.mean(hand_results), hand_results[0:10]))
 
-        #print (str(holdem_hand), np.mean(hand_results), [[categoryName[category], category_results[high_hand_categories_index[category]] / tries_per_draw] for category in HIGH_HAND_CATEGORIES])
+        #print((str(holdem_hand), np.mean(hand_results), [[categoryName[category], category_results[high_hand_categories_index[category]] / tries_per_draw] for category in HIGH_HAND_CATEGORIES]))
         average_result = np.mean(hand_results)
         category_values = [[category, category_results[high_hand_categories_index[category]] / tries_per_draw] for category in HIGH_HAND_CATEGORIES]
 
@@ -201,7 +201,7 @@ if __name__ == '__main__':
     if output_file_name:
         output_file = open(output_file_name, 'w')
         csv_writer = csv.writer(output_file)
-	# Don't print header
+	# Don't print(header)
         csv_writer.writerow(POKER_FULL_SIM_HEADER)
         csv_header_map = CreateMapFromCSVKey(POKER_FULL_SIM_HEADER)
     else:

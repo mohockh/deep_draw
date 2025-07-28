@@ -58,7 +58,7 @@ if __name__ == '__main__':
             bad_lines +=1
             #print('bad line: %s' % line);
 
-    # Now iterate over players, and print results
+    # Now iterate over players, and print(results)
     for player in players:
         results = np.array(player_results_map[player])
         print('\n---------------\n--------------Final-------------------')

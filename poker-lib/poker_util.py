@@ -61,7 +61,7 @@ def hand_string_to_array(hand_string):
     hand_string = hand_string.replace('[', '')
     hand_string = hand_string.replace(']', '')
     hand_array = hand_string.split(',')
-    #print hand_array
+    #print(hand_array)
     # Return empty array for '[]' input.
     if len(hand_array) == 1 and not hand_array[0]:
         return []

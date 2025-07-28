@@ -41,7 +41,7 @@ for draw_pattern in all_draw_patterns:
     POKER_FULL_SIM_HEADER.append('%s_value' % draw_to_string)
     POKER_FULL_SIM_HEADER.append('%s_draw' % draw_to_string)
 
-print POKER_FULL_SIM_HEADER
+print(POKER_FULL_SIM_HEADER)
 
 # Save a fully simulated hand, in the above format!
 def output_full_sim_csv(poker_hand, header_map, sample_size):
@@ -78,21 +78,21 @@ def output_full_sim_csv(poker_hand, header_map, sample_size):
 # C. Output value of best average
 def game_full_sim(round, tries_per_draw):
 
-    print '\n-- New Round %d --\n' % round
+    print('\n-- New Round %d --\n' % round)
 
     deck = PokerDeck(shuffle=True)
-    #print deck
+    #print(deck)
     draw_hand = PokerHand()
     deal_cards = deck.deal(5)
     draw_hand.deal(deal_cards)
-    print draw_hand
+    print(draw_hand)
 
     # Now, have the hand simulate simulate every possible draw, and record results.
     # NOTE: Don't copy the deck!
     cashier = JacksOrBetter() # "976-9-6" Jacks or Better -- with 100% long-term payout.
     draw_hand.simulate_all_draws(deck=deck, tries=tries_per_draw, payout_table=cashier, debug=False)
 
-    #print draw_hand
+    #print(draw_hand)
 
     # What's the average payout, for the best move?
     pay_him = draw_hand.best_result.average_value
@@ -108,7 +108,7 @@ def generated_cases(sample_size, tries_per_draw, output_file_name):
     if output_file_name:
         output_file = open(output_file_name, 'w')
         csv_writer = csv.writer(output_file)
-	# Don't print header
+	# Don't print(header)
         # csv_writer.writerow(POKER_FULL_SIM_HEADER)
         csv_header_map = CreateMapFromCSVKey(POKER_FULL_SIM_HEADER)
     else:
@@ -124,22 +124,22 @@ def generated_cases(sample_size, tries_per_draw, output_file_name):
             csv_writer.writerow(hand_csv_row)
 
             # Hack, to show matrix for final hand.
-            #print hand_to_matrix(hand.final_hand)
+            #print(hand_to_matrix(hand.final_hand))
             #pretty_print_hand_matrix(hand.final_hand)
 
         round += 1
         end_round_time = time.time()
         #sys.exit(-3)
 
-        print '%d rounds took %.1f seconds' % (round, end_round_time - start_time)
+        print('%d rounds took %.1f seconds' % (round, end_round_time - start_time))
 
     if csv_writer:
-        print '\nwrote %d rows' % len(results)
+        print('\nwrote %d rows' % len(results))
         output_file.close()
 
-    print short_results
+    print(short_results)
     result_values = [r[1] for r in short_results]
-    print '\naverage return: %.2f\tmax return: %.1f' % (np.mean(result_values), max(result_values))
+    print('\naverage return: %.2f\tmax return: %.1f' % (np.mean(result_values), max(result_values)))
 
 if __name__ == '__main__':
     # TODO: Set from command line
@@ -155,7 +155,7 @@ if __name__ == '__main__':
         filename = sys.argv[1]
         output_file_name = filename
 
-    print 'will save %d lines to %s' % (samples, output_file_name)
+    print('will save %d lines to %s' % (samples, output_file_name))
 
     # TODO: Take num samples from command line.
     generated_cases(sample_size=samples, tries_per_draw=tries_per_draw, output_file_name=output_file_name)

@@ -55,7 +55,7 @@ def evaluate_draw_line(line, csv_key_map, tries_per_draw, cashier):
     draw_hand = PokerHand()
     draw_hand.deal(deal_cards)
 
-    print draw_hand
+    print(draw_hand)
 
     # Simulate the hand, and see what sim says!
     draw_hand.simulate_all_draws(deck=deck, tries=tries_per_draw, payout_table=cashier, debug=True)
@@ -76,18 +76,18 @@ def evaluate_draw_line(line, csv_key_map, tries_per_draw, cashier):
     print('Draw we actually made: %s' % ai_draw_string)
 
     if (ai_draw_string == best_result_string):
-        print ('\t--> Draws match!!!\n')
+        print(('\t--> Draws match!!!\n'))
         ai_draw_value = best_result_value
         error = 0.0
     else:
-        print ('\t--> NO MATCH\n\ncomputing error...\n')
+        print(('\t--> NO MATCH\n\ncomputing error...\n'))
         ai_draw_value = draw_hand.find_draw_value_for_string(ai_draw_string)
 
         print('AI draw value: %.2f' % ai_draw_value)
 
         error = best_result_value - ai_draw_value
 
-        print ('error: %.2f\n' % error)
+        print(('error: %.2f\n' % error))
     
     # No need to return hand? Just output the results...
     return (error, dealt_hand_string, best_result_string, best_result_value, ai_draw_string, ai_draw_value)
@@ -167,7 +167,7 @@ def evaluate_draws(input_filename, output_filename, tries_per_draw, max_input=50
             # Show biggest errors so far...
             biggest_errors = sorted(error_results, reverse=True)[0:NUM_SHOW_ERRORS]
             for big_error in biggest_errors:
-                print big_error
+                print(big_error)
 
             if hands >= max_input:
                 break

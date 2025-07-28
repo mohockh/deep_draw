@@ -217,7 +217,7 @@ while 1:
 
     print('\n-------------------')
 
-    print line
+    print(line)
 
     state = state_regex.match(line)
     assert state, 'Unable to regexp from server: |%s|' % line
