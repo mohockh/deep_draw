@@ -8,7 +8,7 @@ import scipy.stats as ss
 import itertools
 from poker_hashes import *
 from poker_util import *
-import cards_to_python_ext # BOOST.Python for function cards_to_python_ext.canonical_board("7h7dAhKd2h9c",0,2)
+# import cards_to_python_ext # BOOST.Python for function cards_to_python_ext.canonical_board("7h7dAhKd2h9c",0,2)
 
 """
 Author: Nikolai Yakovenko
@@ -475,12 +475,13 @@ def holdem_cards_canonical_form(cards_array, flop_array, turn_array, river_array
         upper_bound = 0
 
     # C. Run C-library
-    all_cards_canonical_string = cards_to_python_ext.canonical_board(all_cards_string, lower_bound, upper_bound)
+    #all_cards_canonical_string = cards_to_python_ext.canonical_board(all_cards_string, lower_bound, upper_bound)
+    all_cards_canonical_string = all_cards_string
     #print(all_cards_canonical_string)
     
     # D. Translate back to card arrays
     all_cards_canonical_array = []
-    for i in range(len(all_cards_canonical_string) / 2):
+    for i in range(len(all_cards_canonical_string) // 2):
         card = card_from_string(all_cards_canonical_string[i*2:i*2+2])
         all_cards_canonical_array.append(card)
 
@@ -531,7 +532,7 @@ def card_array_from_string(card_str):
     assert len(card_str) % 2 == 0, 'Invalid card string! |%s|' % card_str
     try:
         card_array = []
-        for i in range(len(card_str)/2):
+        for i in range(len(card_str) // 2):
             card_array.append(card_from_string(card_str[2*i:2*i+2]))
         return card_array
     except KeyError:
