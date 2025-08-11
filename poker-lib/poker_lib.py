@@ -705,30 +705,19 @@ HAND_TO_MATRIX_PAD_SIZE = 17
 DOUBLE_ROW_HAND_MATRIX = True # False # True # False # Set true for 8x13 matrix, with redundancy. 
 remap_suit = {CLUB:CLUB, HEART:DIAMOND, DIAMOND:HEART, SPADE:SPADE}
 def hand_to_matrix(poker_hand, pad_to_fit=False, pad_size=HAND_TO_MATRIX_PAD_SIZE, double_row=DOUBLE_ROW_HAND_MATRIX):
-    # initialize empty 4x13 matrix
-    # Unless pad to fit... in which case pad to 17x17
-    if pad_to_fit:
-        matrix = np.array([[0 for x in range(pad_size)] for x in range(pad_size)], np.int32)
-    else:
-        matrix = np.array([[0 for x in range(len(ranksArray))] for x in range(len(suitsArray))], np.int32)
-    if pad_to_fit:
-        if pad_size == 17:
-            # add 5 empty rows to start, and 5 empty rows to finish
-            suit_offset = 6
-            # add empty column to start 
-            value_offset = 2
-        elif pad_size == 15:
-            suit_offset = 5
-            value_offset = 1
-        if double_row:
-            suit_offset -= 2
-    else:
-        suit_offset = 0
-        value_offset = 0
+    # If pad_size is a scalar, set both dimensions to the same value.
+    if not isinstance(pad_size, (list, tuple)):
+        pad_size = (pad_size, pad_size)
+    if double_row: assert pad_size[0] >= 8
+    matrix = np.zeros(pad_size, np.float32)
+    value_offset = (pad_size[1] - 13 + 1) // 2
+    value_max = pad_size[1] - value_offset + 1
+    suit_offset = (pad_size[0] - 8 + 1) // 2 if double_row else (pad_size[0] - 4 + 1) // 2
+    suit_max = pad_size[0] - suit_offset + 1
+
+    matrix = np.zeros(pad_size, np.int32)
 
     for card in poker_hand:
-        #print(card)
-        #print(([suits_to_matrix[card.suit]], [card.value]))
         matrix[suits_to_matrix[card.suit] + suit_offset][card.value + value_offset] = 1
 
     # If double row, now copy rows
@@ -758,17 +747,15 @@ def pretty_print_hand_matrix(poker_hand):
 # NOTE: Will return array of floats, since bet sizes can be, and will be, chunked.
 DOUBLE_ROW_BET_MATRIX = True # We need 8x13 to encode bet sizes. It would be nice if also 8x13 for cards, but even if not...
 def bet_size_to_matrix(bet_size, scale, pad_size=HAND_TO_MATRIX_PAD_SIZE, double_row=DOUBLE_ROW_BET_MATRIX):
-    matrix = np.array([[0 for x in range(pad_size)] for x in range(pad_size)], np.float32)
-    if pad_size == 17:
-        # add 5 empty rows to start, and 5 empty rows to finish
-        suit_offset = 6
-        # add empty column to start 
-        value_offset = 2
-    elif pad_size == 15:
-        suit_offset = 5
-        value_offset = 1
-    if double_row:
-        suit_offset -= 2
+    # If pad_size is a scalar, set both dimensions to the same value.
+    if not isinstance(pad_size, (list, tuple)):
+        pad_size = (pad_size, pad_size)
+    if double_row: assert pad_size[0] >= 8
+    matrix = np.zeros(pad_size, np.float32)
+    value_offset = (pad_size[1] - 13 + 1) // 2
+    value_max = pad_size[1] - value_offset + 1
+    suit_offset = (pad_size[0] - 8 + 1) // 2 if double_row else (pad_size[0] - 4 + 1) // 2
+    suit_max = pad_size[0] - suit_offset + 1
 
     num_ranks = len(ranksArray)
     num_suits = len(suitsArray)
@@ -779,22 +766,21 @@ def bet_size_to_matrix(bet_size, scale, pad_size=HAND_TO_MATRIX_PAD_SIZE, double
     # Keep chunking bet_size, until we run out, or fill the grid
     num_bets = (bet_size * 1.0) / scale
     assert num_bets >= 0.0, 'Attempting to encode unknown bet size %s (scale %s)' % (bet_size, scale)
-    for rank in range(num_ranks):
-        for suit in range(num_suits):
-            if num_bets > 1.0:
-                matrix[suit + suit_offset][rank + value_offset] = 1.0
-                num_bets -= 1.0
-            elif num_bets > 0.0:
-                matrix[suit + suit_offset][rank + value_offset] = num_bets
-                num_bets = 0.0
-                break
-            else:
-                break
-        if num_bets == 0.0:
-            break
 
-    if num_bets > 0.0:
-        print('Finished encoding bet %s with remainder %s' % (bet_size, num_bets * scale))
+    # Fill in NxM block of 1.0 whole bets.
+    # Protect against matrix overflow if number of columns needed > num_ranks.
+    # This indicates scale should be increased to fit the bets in the matrix.
+    num_full_suit_columns = min(int(num_bets // num_suits), num_ranks)
+    matrix[suit_offset:suit_max, value_offset:(value_offset + num_full_suit_columns)] = 1.0
+    if (num_bets // num_suits) > num_ranks:
+        print('Finished encoding bet %s with remainder %s' % (bet_size, (num_bets - num_suits * num_ranks) * scale))
+    # Fill in remainder whole bets in N+1th column.
+    num_full_bet_rows = max(int(num_bets - (num_full_suit_columns * num_suits)), 0)
+    matrix[suit_offset:(suit_offset + num_full_bet_rows), value_offset + num_full_suit_columns] = 1.0
+    # Fill in last (partial) bet in N+1th column, position M+1.
+    last_bet_value = max(num_bets - (num_full_suit_columns * num_suits) - num_full_bet_rows, 0)
+    matrix[suit_offset + num_full_bet_rows, value_offset + num_full_suit_columns] = last_bet_value
+
     return matrix
 
 # For LIMIT game... [assumes 50.0 step and single-precision 4x13 matrix inputs]
@@ -817,29 +803,20 @@ def pot_to_array(pot_size, pad_to_fit = True):
     
 # create a matrix with same shape as a card... filled with given value
 # TODO: Merge the *fill*, with card input..
-def card_to_matrix_fill(fill, pad_to_fit=True,  pad_size = HAND_TO_MATRIX_PAD_SIZE):
-    #matrix = np.array([[fill for x in range(pad_size)] for x in range(pad_size)], np.int32)
-    if pad_to_fit:
-        matrix = np.array([[0 for x in range(pad_size)] for x in range(pad_size)], np.int32)
-    else:
-        matrix = np.array([[0 for x in range(len(ranksArray))] for x in range(len(suitsArray))], np.int32)
+def card_to_matrix_fill(fill, pad_to_fit=True,  pad_size = HAND_TO_MATRIX_PAD_SIZE, double_row=False):
+    # If pad_size is a scalar, set both dimensions to the same value.
+    if not isinstance(pad_size, (list, tuple)):
+        pad_size = (pad_size, pad_size)
+    if double_row: assert pad_size[0] >= 8
+    matrix = np.zeros(pad_size, np.int32)
     # Fill with fill... but just the spot where cards go.
-    # add 5 empty rows to start, and 5 empty rows to finish
-    if pad_to_fit:
-        if pad_size == 17:
-            # add 5 empty rows to start, and 5 empty rows to finish
-            suit_offset = 6
-            # add empty column to start 
-            value_offset = 2
-        elif pad_size == 15:
-            suit_offset = 5
-            value_offset = 1
-    else:
-        suit_offset = 0
-        value_offset = 0
-    for suit in suitsArray:
-        for rank in ranksArray:
-             matrix[suits_to_matrix[suit] + suit_offset][rank + value_offset] = fill
+    # add N/2 empty rows to start, and N/2 empty rows to finish
+    # if an odd number of fill rows, fill the extra in first row and/or column
+    value_offset = (pad_size[1] - 13 + 1) // 2
+    value_max = pad_size[1] - value_offset + 1
+    suit_offset = (pad_size[0] - 8 + 1) // 2 if double_row else (pad_size[0] - 4 + 1) // 2
+    suit_max = pad_size[0] - suit_offset + 1
+    matrix[suit_offset:suit_max, value_offset:value_max] = fill
     return matrix
 
 # Interface for payout table. Just a wrapper around a table.
