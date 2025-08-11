@@ -711,9 +711,7 @@ def hand_to_matrix(poker_hand, pad_to_fit=False, pad_size=HAND_TO_MATRIX_PAD_SIZ
     if double_row: assert pad_size[0] >= 8
     matrix = np.zeros(pad_size, np.float32)
     value_offset = (pad_size[1] - 13 + 1) // 2
-    value_max = pad_size[1] - value_offset + 1
     suit_offset = (pad_size[0] - 8 + 1) // 2 if double_row else (pad_size[0] - 4 + 1) // 2
-    suit_max = pad_size[0] - suit_offset + 1
 
     matrix = np.zeros(pad_size, np.int32)
 
@@ -753,9 +751,8 @@ def bet_size_to_matrix(bet_size, scale, pad_size=HAND_TO_MATRIX_PAD_SIZE, double
     if double_row: assert pad_size[0] >= 8
     matrix = np.zeros(pad_size, np.float32)
     value_offset = (pad_size[1] - 13 + 1) // 2
-    value_max = pad_size[1] - value_offset
     suit_offset = (pad_size[0] - 8 + 1) // 2 if double_row else (pad_size[0] - 4 + 1) // 2
-    suit_max = pad_size[0] - suit_offset
+    suit_max = pad_size[0] - ((pad_size[0] - 8) // 2 if double_row else (pad_size[0] - 4) // 2)
 
     num_ranks = len(ranksArray)
     num_suits = len(suitsArray)
@@ -816,9 +813,9 @@ def card_to_matrix_fill(fill, pad_to_fit=True,  pad_size = HAND_TO_MATRIX_PAD_SI
     # add N/2 empty rows to start, and N/2 empty rows to finish
     # if an odd number of fill rows, fill the extra in first row and/or column
     value_offset = (pad_size[1] - 13 + 1) // 2
-    value_max = pad_size[1] - value_offset + 1
+    value_max = pad_size[1] - ((pad_size[1] - 13) // 2)
     suit_offset = (pad_size[0] - 8 + 1) // 2 if double_row else (pad_size[0] - 4 + 1) // 2
-    suit_max = pad_size[0] - suit_offset + 1
+    suit_max = pad_size[0] - ((pad_size[0] - 8) // 2 if double_row else (pad_size[0] - 4) // 2)
     matrix[suit_offset:suit_max, value_offset:value_max] = fill
     return matrix
 
