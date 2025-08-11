@@ -753,9 +753,9 @@ def bet_size_to_matrix(bet_size, scale, pad_size=HAND_TO_MATRIX_PAD_SIZE, double
     if double_row: assert pad_size[0] >= 8
     matrix = np.zeros(pad_size, np.float32)
     value_offset = (pad_size[1] - 13 + 1) // 2
-    value_max = pad_size[1] - value_offset + 1
+    value_max = pad_size[1] - value_offset
     suit_offset = (pad_size[0] - 8 + 1) // 2 if double_row else (pad_size[0] - 4 + 1) // 2
-    suit_max = pad_size[0] - suit_offset + 1
+    suit_max = pad_size[0] - suit_offset
 
     num_ranks = len(ranksArray)
     num_suits = len(suitsArray)
@@ -772,14 +772,17 @@ def bet_size_to_matrix(bet_size, scale, pad_size=HAND_TO_MATRIX_PAD_SIZE, double
     # This indicates scale should be increased to fit the bets in the matrix.
     num_full_suit_columns = min(int(num_bets // num_suits), num_ranks)
     matrix[suit_offset:suit_max, value_offset:(value_offset + num_full_suit_columns)] = 1.0
-    if (num_bets // num_suits) > num_ranks:
+    if num_bets > float(num_ranks * num_suits):
         print('Finished encoding bet %s with remainder %s' % (bet_size, (num_bets - num_suits * num_ranks) * scale))
+        return matrix
     # Fill in remainder whole bets in N+1th column.
     num_full_bet_rows = max(int(num_bets - (num_full_suit_columns * num_suits)), 0)
-    matrix[suit_offset:(suit_offset + num_full_bet_rows), value_offset + num_full_suit_columns] = 1.0
+    if num_full_bet_rows > 0:
+        matrix[suit_offset:(suit_offset + num_full_bet_rows), value_offset + num_full_suit_columns] = 1.0
     # Fill in last (partial) bet in N+1th column, position M+1.
-    last_bet_value = max(num_bets - (num_full_suit_columns * num_suits) - num_full_bet_rows, 0)
-    matrix[suit_offset + num_full_bet_rows, value_offset + num_full_suit_columns] = last_bet_value
+    last_bet_value = max(num_bets - float(num_full_suit_columns * num_suits) - num_full_bet_rows, 0.0)
+    if last_bet_value > 0.0:
+        matrix[suit_offset + num_full_bet_rows, value_offset + num_full_suit_columns] = last_bet_value
 
     return matrix
 
